@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html>
+
+<body>
+
+    <h1 style="color: green">
+        The Vision-Based Control Robot
+    </h1> 
+    <button type="button" onclick="hideStream('controller');mode('controller')">Controller Mode</button>  
+    <button type="button" onclick="hideControlers();mode('HSV')">HSV Mode</button>  
+    <button type="button" onclick="mode('SSD');hideStream('ssd')">SSD Mode</button>   
+    <br><br>
+    <img id = "bg" src="{{ url_for('video_feed') }}" onclick="showCoords(event)">
+    <img id = "bg2" src="{{ url_for('video_feed2') }}" onclick="showCoords(event)">
+    <br><br>
+
+    <div style="text-align:center;">
+        <button id="forward"  onclick="server.moveup()">FORWARD</button>
+        <br><br>
+        <button id="left" onclick="server.moveleft()">LEFT</button>
+        <button id="stop" onclick="server.clearmove()">STOP</button>
+        <button id="right" onclick="server.moveright()" >RIGHT</button>
+        <br><br>
+        <button id="back" onclick="server.movedown()">BACK</button>
+    </div>
+  
+
+    <div style = "position:relative; left:1400px; top:-600px;">
+        <input type="text" id="myText1" name="fname" placeholder="hueLower in range (0 - 179)"/> 
+        <button id="1" type="button" onclick="func1((document.getElementById('myText1').value).toString(),'hueLower');">Set</button>   
+    </div>
+    <div style = "position:relative; left:1400px; top:-570px;">
+        <input type="text" id="myText2" name="fname" placeholder="hueUpper in range (0 - 179)"/> 
+        <button id="2" type="button" onclick="func1((document.getElementById('myText2').value).toString(),'hueUpper');">Set</button>   
+    </div>
+    <div style = "position:relative; left:1400px; top:-540px;">
+        <input type="text" id="myText3" name="fname" placeholder="hue2Lower in Range (0 - 179)"/>     
+        <button id="3" type="button" onclick="func1((document.getElementById('myText3').value).toString(),'hue2Lower');">Set</button>   
+    </div>
+    <div style = "position:relative; left:1400px; top:-510px;">
+        <input type="text" id="myText4" name="fname" placeholder="hue2Upper in Range (0 - 179)"/>     
+        <button id="4" type="button" onclick="func1((document.getElementById('myText4').value).toString(),'hue2Upper');">Set</button>   
+    </div>
+    <div style = "position:relative; left:1400px; top:-480px;">
+        <input type="text" id="myText5" name="fname" placeholder="satLow in Range (0 - 255)"/>    
+        <button id="5" type="button" onclick="func1((document.getElementById('myText5').value).toString(),'satLow');">Set</button>    
+    </div>
+    <div style = "position:relative; left:1400px; top:-450px;">
+        <input type="text" id="myText6" name="fname" placeholder="satHigh in Range (0 - 255)"/>     
+        <button id="6" type="button" onclick="func1((document.getElementById('myText6').value).toString(),'satHigh');">Set</button>   
+    </div>
+    <div style = "position:relative; left:1400px; top:-420px;">
+        <input type="text" id="myText7" name="fname" placeholder="valLow in Range (0 - 255)"/>     
+        <button id="7" type="button" onclick="func1((document.getElementById('myText7').value).toString(),'valLow');">Set</button>   
+    </div>
+    <div style = "position:relative; left:1400px; top:-390px;">
+        <input type="text" id="myText8" name="fname" placeholder="valHigh in Range (0 - 255)"/>     
+        <button id="8" type="button" onclick="func1((document.getElementById('myText8').value).toString(),'valHigh');">Set</button>   
+    </div>
+    <p> Select an object to follow:
+        <select id="select1">
+            <option value="Object 1">Object 1</option>
+            <option value="Object 2">Object 2</option>
+            <option value="Object 3">Object 3</option>
+        </select>
+    </p>
+    <button onclick="getOption();server.send_message()"> Select </button>
+    
+    
+    <p> The Robot will follow: 
+        <span class="output"></span>
+    </p>
+    <script type="text/javascript">
+    function getOption() {
+        selectElement = document.querySelector('#select1');
+        output = selectElement.value;
+        document.querySelector('.output').textContent = output;      
+    }
+       
+    </script>
+
+    <script>
+    function showCoords(event) {
+      var x = event.offsetX;
+      var y = event.offsetY;
+      var coor = "X coords: " + x + ", Y coords: " + y;
+      const x_val = x.toString();
+      const y_val = y.toString();
+      const xhr = new XMLHttpRequest();
+      xhr.open('POST', '/Validate', true);
+      sender = JSON.stringify(x_val);
+      xhr.send(x_val + "," + y_val);
+    }
+    </script>
+    
+    
+    <script>  
+        function mode(modeType){
+            const xhr = new XMLHttpRequest();
+            xhr.open('POST', '/Modes', true);
+            sender = JSON.stringify(modeType);
+            xhr.send(modeType);
+        }     
+        function func1(filter,type) {
+            const xhr = new XMLHttpRequest();
+            xhr.open('POST', '/filters', true);
+            sender = JSON.stringify(filter);
+            xhr.send(type + "," + filter);
+        }
+        function hideControlers() {
+            if(document.getElementById('bg2').style.visibility == 'hidden'){
+                document.getElementById('bg2').style.visibility = 'visible'
+            }
+            if(document.getElementById('1').style.visibility == 'hidden'){
+                document.getElementById('1').style.visibility = 'visible';
+                document.getElementById('2').style.visibility = 'visible';
+                document.getElementById('3').style.visibility = 'visible';
+                document.getElementById('4').style.visibility = 'visible';
+                document.getElementById('5').style.visibility = 'visible';
+                document.getElementById('6').style.visibility = 'visible';
+                document.getElementById('7').style.visibility = 'visible';
+                document.getElementById('8').style.visibility = 'visible';
+                document.getElementById('myText1').style.visibility = 'visible';
+                document.getElementById('myText2').style.visibility = 'visible';
+                document.getElementById('myText3').style.visibility = 'visible';
+                document.getElementById('myText4').style.visibility = 'visible';
+                document.getElementById('myText5').style.visibility = 'visible';
+                document.getElementById('myText6').style.visibility = 'visible';
+                document.getElementById('myText7').style.visibility = 'visible';
+                document.getElementById('myText8').style.visibility = 'visible';
+            }
+            document.getElementById('left').style.visibility = 'hidden';
+            document.getElementById('right').style.visibility = 'hidden';
+            document.getElementById('stop').style.visibility = 'hidden';
+            document.getElementById('forward').style.visibility = 'hidden';
+            document.getElementById('back').style.visibility = 'hidden';
+        }
+        function hideStream(m){
+            if(m == "ssd"){
+                document.getElementById('left').style.visibility = 'hidden';
+                document.getElementById('right').style.visibility = 'hidden';
+                document.getElementById('stop').style.visibility = 'hidden';
+                document.getElementById('forward').style.visibility = 'hidden';
+                document.getElementById('back').style.visibility = 'hidden';
+            }else{
+                document.getElementById('left').style.visibility = 'visible';
+                document.getElementById('right').style.visibility = 'visible';
+                document.getElementById('stop').style.visibility = 'visible';
+                document.getElementById('forward').style.visibility = 'visible';
+                document.getElementById('back').style.visibility = 'visible';
+            }
+            document.getElementById('bg2').style.visibility = 'hidden';
+            document.getElementById('1').style.visibility = 'hidden';
+            document.getElementById('2').style.visibility = 'hidden';
+            document.getElementById('3').style.visibility = 'hidden';
+            document.getElementById('4').style.visibility = 'hidden';
+            document.getElementById('5').style.visibility = 'hidden';
+            document.getElementById('6').style.visibility = 'hidden';
+            document.getElementById('7').style.visibility = 'hidden';
+            document.getElementById('8').style.visibility = 'hidden';
+            document.getElementById('myText1').style.visibility = 'hidden';
+            document.getElementById('myText2').style.visibility = 'hidden';
+            document.getElementById('myText3').style.visibility = 'hidden';
+            document.getElementById('myText4').style.visibility = 'hidden';
+            document.getElementById('myText5').style.visibility = 'hidden';
+            document.getElementById('myText6').style.visibility = 'hidden';
+            document.getElementById('myText7').style.visibility = 'hidden';
+            document.getElementById('myText8').style.visibility = 'hidden';
+            
+        }
+        window.onload = hideStream;
+
+    $   (document).ready(function(){
+        $('a[data-toggle="tab"]').on('show.bs.tab', function(e) {
+        localStorage.setItem('activeTab', $(e.target).attr('href'));
+    });
+        var activeTab = localStorage.getItem('activeTab');
+        if(activeTab){
+            $('#myTab a[href="' + activeTab + '"]').tab('show');
+        }
+    });
+
+    </script>
+    
+</body>
+
+</html>
